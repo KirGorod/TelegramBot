@@ -3,7 +3,6 @@
 import requests
 import telebot
 import os
-import pickle
 import random
 
 from telebot.types import Message
