@@ -3,45 +3,44 @@ import telebot
 import os
 import random
 import math
+import functions
+import constants
 
 from telebot.types import Message
 
-TOKEN = "702003056:AAEN2ezPlR5hjTe1Bz6OiHLzNLUF8XUnZ9U"
-STICKER = 'CAADAgADHwADaJpdDDUrtxkEhXY8Ag'
-chat_id = '405732032'
+TOKEN = constants.TOKEN
 
 bot = telebot.TeleBot(TOKEN)
 
-def game():
-    with open('data.pickle', 'rb') as f:
-        data = pickle.load(f)
-        return dict(data)
-def weather():
-    url= 'http://api.openweathermap.org/data/2.5/weather?appid=b785080d09ffe12ee852f2035e884903&q=Kiev'
-    json_content = requests.get(url).json()
-    json_content = json_content.pop("weather")
-    json_content = json_content.pop()
-    current_weather = json_content.pop("main")
-
-    return str(current_weather)
 
 
+#Обработчик комманд
 @bot.edited_message_handler(content_types=['text'])
-@bot.message_handler(commands=['start','help', 'weather', 'game'])
+@bot.message_handler(commands=['start','help', 'game'])
 def comand_handler(message: Message):
     if '/help' in message.text:
         bot.reply_to(message, 'Help info')
     elif '/start' in message.text:
         bot.reply_to(message, 'About bot: ')
-    elif '/weather' in message.text:
-        current_weather = weather()
-        bot.send_message(chat_id, current_weather)
-    elif 'game' in message.text:
-        data = game()
-        print(data)
-        bot.reply_to(message, str(data))
     else:
         pass
+
+#Команда погоды
+@bot.edited_message_handler(content_types=['text'])
+@bot.message_handler(commands=['weather'])
+def command_weather(message):
+    print(message.text)
+    if(len(message.text.split())) < 2:
+        bot.reply_to(message, "Bad syntax! Try with /weather <CITY>")
+        return
+    elif (len(message.text.split())) >= 2:
+        City = message.text.split(sep = ' '); City = City[-1]
+        if City.isdigit() == True:
+            bot.reply_to(message, "Digits`s are not allowed!")
+        else:
+            City = message.text.split(sep = ' '); City = City[-1]
+            bot.send_message(message.chat.id, functions.weather_payload(City))
+
 
 
 bot.polling(timeout=60)
