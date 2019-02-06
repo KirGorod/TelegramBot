@@ -2,3 +2,4 @@ start - about bot
 help - help info
 game - play a game
 weather - current weather
+test - test script

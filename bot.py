@@ -16,12 +16,14 @@ bot = telebot.TeleBot(TOKEN)
 
 #Обработчик комманд
 @bot.edited_message_handler(content_types=['text'])
-@bot.message_handler(commands=['start','help', 'game'])
+@bot.message_handler(commands=['start','help', 'test'])
 def comand_handler(message: Message):
     if '/help' in message.text:
         bot.reply_to(message, 'Help info')
     elif '/start' in message.text:
-        bot.reply_to(message, 'About bot: ')
+        bot.reply_to(message, 'Start info')
+    elif '/test' in message.text:
+        bot.reply_to(message, functions.print_emoji("Rain"))
     else:
         pass
 
@@ -31,8 +33,7 @@ def comand_handler(message: Message):
 def command_weather(message):
     print(message.text)
     if(len(message.text.split())) < 2:
-        bot.reply_to(message, "Bad syntax! Try with /weather <CITY>")
-        return
+        bot.send_message(message.chat.id, functions.weather_payload())
     elif (len(message.text.split())) >= 2:
         City = message.text.split(sep = ' '); City = City[-1]
         if City.isdigit() == True:

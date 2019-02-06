@@ -1,21 +1,24 @@
 import requests
 import random
+import constants
 
-#data_string = {'coord': {'lon': 30.52, 'lat': 50.43}, 'weather': [{'id': 804, 'main': 'Clouds', 'description': 'overcast clouds', 'icon': '04n'}], 'base': 'stations', 'main': {'temp': 273.15, 'pressure': 1028, 'humidity': 92, 'temp_min': 273.15, 'temp_max': 273.15}, 'visibility': 10000, 'wind': {'speed': 1, 'deg': 100}, 'clouds': {'all': 90}, 'dt': 1549395000, 'sys': {'type': 1, 'id': 8898, 'message': 0.0036, 'country': 'UA', 'sunrise': 1549344362, 'sunset': 1549378713}, 'id': 703448, 'name': 'Kiev', 'cod': 200}
-
-def take_data(City="Kiev"):
-    data = get_weather(City)
+#Возвращает сырые данные в json от Weather API
+def get_raw_weather_data(City="Kiev"):
+    url = f'http://api.openweathermap.org/data/2.5/weather?appid={constants.WEATHER_API_KEY}&q={City}'
+    data = requests.get(url).json()
 
     return data
 
+#Возвращает обработанные данные в json от Weather API
 def get_weather(City="Kiev"):
-    url = f'http://api.openweathermap.org/data/2.5/weather?appid=b785080d09ffe12ee852f2035e884903&q={City}'
+    url = f'http://api.openweathermap.org/data/2.5/weather?appid={constants.WEATHER_API_KEY}&q={City}'
     data = requests.get(url).json()
     json_content = data
 
     if "message" not in json_content:
         json_content = json_content.pop("weather")
         json_content = json_content.pop()
+        icon = json_content.pop("icon")
         current_weather = json_content.pop("main")
 
         json_content = data
@@ -25,7 +28,7 @@ def get_weather(City="Kiev"):
         temperature = int(temperature)
         pressure = json_content.pop("pressure")
         humidity = json_content.pop("humidity")
-        # info = f"City: {City}, Current weather: {current_weather}, Temperature: {temperature}, pressure: {pressure}, humidity: {humidity}"
+
         data = {"City": City, "Current weather": current_weather, "Temperature": temperature, "Pressure": pressure,
                 "Humidity": humidity}
     elif "message" in json_content:
@@ -35,6 +38,7 @@ def get_weather(City="Kiev"):
 
     return data
 
+#Возвращает title для сообщения
 def city_say(City="Kiev"):
     data = get_weather(City)
     if "Error" not in data:
@@ -42,7 +46,7 @@ def city_say(City="Kiev"):
 
         if get_City == "Kiev":
             get_City = "Киев"
-        title = f"Погода для города {City}: \n"
+        title = f"Погода для города {get_City}: \n\n"
     else:
         title = "Error"
 
@@ -52,18 +56,76 @@ def weather_say(City='Kiev'):
     data = get_weather(City)
     if "Error" not in data:
         get_CurrentWeather = data.get("Current weather")
-        say_weather = ""
 
-        if get_CurrentWeather == "Clouds":
+        if get_CurrentWeather == "Clear":
             weather_dialogs = random.randint(0, 1)
             if weather_dialogs == 0:
-                say_weather = "Ебаных облачек не наблюдаю"
+                say_weather = "Ебаных облачек не наблюдаю.\n"
             elif weather_dialogs == 1:
-                say_weather = "Опачки, пропали облачки"
+                say_weather = "Опачки, пропали облачки.\n"
             else:
-                "Empty"
-        else:
-            say_weather = "<Дописать код>"
+                say_weather = "Empty"
+        elif get_CurrentWeather == "Snow":
+            weather_dialogs = random.randint(0, 3)
+            if weather_dialogs == 0:
+                say_weather = "Долго не было зимы…\nЖдали, волновались.\nА за сутки выпал снег…\nКак же заебались.\n"
+            elif weather_dialogs == 1:
+                say_weather = "Посидел вчера в сугробе,\nПоморозил себе нос,\nИнтерес к моей особе\nВмиг у милого возрос.\n"
+            elif weather_dialogs == 2:
+                say_weather = "Вот и выпал вдруг снежок,\nИ упал на носик.\nА ты сидишь все за компом,\nБездарь-недоносик.\n"
+            elif weather_dialogs == 3:
+                say_weather = "***Let it snow, let it snow, let it snow***"
+            else:
+                say_weather = "Empty"
+        elif get_CurrentWeather == "Thunderstorm":
+            weather_dialogs = random.randint(0, 1)
+            if weather_dialogs == 0:
+                say_weather = "Thunderstorm"
+            elif weather_dialogs == 1:
+                say_weather = "Thunderstorm"
+            else:
+                say_weather = "Empty"
+        elif get_CurrentWeather == "Drizzle":
+            weather_dialogs = random.randint(0, 1)
+            if weather_dialogs == 0:
+                say_weather = "Drizzle"
+            elif weather_dialogs == 1:
+                say_weather = "Drizzle"
+            else:
+                say_weather = "Empty"
+
+        elif get_CurrentWeather == "Rain":
+            weather_dialogs = random.randint(0, 1)
+            if weather_dialogs == 0:
+                say_weather = "Rain"
+            elif weather_dialogs == 1:
+                say_weather = "Rain"
+            else:
+                say_weather = "Empty"
+        elif get_CurrentWeather == "Fog":
+            weather_dialogs = random.randint(0, 1)
+            if weather_dialogs == 0:
+                say_weather = "Mist1"
+            elif weather_dialogs == 1:
+                say_weather = "Fog1"
+            else:
+                say_weather = "Empty"
+        elif get_CurrentWeather == "Mist":
+            weather_dialogs = random.randint(0, 1)
+            if weather_dialogs == 0:
+                say_weather = "Fog2"
+            elif weather_dialogs == 1:
+                say_weather = "Mist2"
+            else:
+                say_weather = "Empty"
+        elif get_CurrentWeather == "Clouds":
+            weather_dialogs = random.randint(0, 1)
+            if weather_dialogs == 0:
+                say_weather = str(emoji_print("Cloud"))*3 + "\nClouds "
+            elif weather_dialogs == 1:
+                say_weather = "Clouds "
+            else:
+                say_weather = "Empty"
     else:
         say_weather = "Error"
     return say_weather
@@ -103,5 +165,14 @@ def weather_payload(City="Kiev"):
         payload = f"Error!!! No city named {City}."
     return payload
 
-a = weather_payload("Lvivv")
+def emoji_print(emoji):
+    emoji = constants.weather_emoji.get(emoji)
+
+    return emoji
+
+
+Gorod = "Lviv"
+b = get_weather(Gorod)
+print(b)
+a = weather_say(Gorod)
 print(a)
